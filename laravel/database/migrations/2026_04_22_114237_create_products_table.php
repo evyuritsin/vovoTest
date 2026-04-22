@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -20,9 +21,12 @@ return new class extends Migration
             $table->float('rating', 3, 2)->default(0);
             $table->timestamps();
 
-            $table->index('name');
             $table->index('price');
             $table->index('rating');
+
+            if (DB::getDriverName() === 'mysql') {
+                $table->fullText('name');
+            }
         });
     }
 

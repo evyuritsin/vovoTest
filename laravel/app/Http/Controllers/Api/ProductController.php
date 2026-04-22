@@ -15,7 +15,12 @@ class ProductController extends Controller
 
         // Filters
         if ($request->has('q')) {
-            $query->where('name', 'like', '%' . $request->q . '%');
+            $driver = $query->getConnection()->getDriverName();
+            if ($driver === 'mysql') {
+                $query->whereFullText('name', $request->q);
+            } else {
+                $query->where('name', 'like', '%' . $request->q . '%');
+            }
         }
 
         if ($request->has('price_from')) {
