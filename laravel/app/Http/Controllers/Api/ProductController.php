@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductIndexRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index(Request $request)
+    public function index(ProductIndexRequest $request)
     {
         $query = Product::query();
 
         // Filters
-        if ($request->has('q')) {
+        if ($request->filled('q')) {
             $driver = $query->getConnection()->getDriverName();
             if ($driver === 'mysql') {
                 $query->whereFullText('name', $request->q);
@@ -23,24 +23,23 @@ class ProductController extends Controller
             }
         }
 
-        if ($request->has('price_from')) {
+        if ($request->filled('price_from')) {
             $query->where('price', '>=', $request->price_from);
         }
 
-        if ($request->has('price_to')) {
+        if ($request->filled('price_to')) {
             $query->where('price', '<=', $request->price_to);
         }
 
-        if ($request->has('category_id')) {
+        if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        if ($request->has('in_stock')) {
-            $inStock = filter_var($request->in_stock, FILTER_VALIDATE_BOOLEAN);
-            $query->where('in_stock', $inStock);
+        if ($request->filled('in_stock')) {
+            $query->where('in_stock', $request->in_stock);
         }
 
-        if ($request->has('rating_from')) {
+        if ($request->filled('rating_from')) {
             $query->where('rating', '>=', $request->rating_from);
         }
 
